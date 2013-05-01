@@ -1,0 +1,6 @@
+[submodule "lib/HatenaSyntax"]
+	path = lib/HatenaSyntax
+	url = git://github.com/anatoo/HatenaSyntax.git
+[submodule "lib/PEG"]
+	path = lib/PEG
+	url = git://github.com/anatoo/phppeg.git

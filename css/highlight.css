@@ -1,0 +1,46 @@
+/**
+* GeSHi Dynamically Generated Stylesheet
+* --------------------------------------
+* Dynamically generated stylesheet for highlight
+* CSS class: , CSS id:
+* GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+* (http://qbnz.com/highlighter/ and http://geshi.org/)
+* --------------------------------------
+*/
+.highlight .de1, .highlight .de2 {font: normal normal 1em/1.2em monospace; margin:0; padding:0; background:none; vertical-align:top;}
+.highlight  {font-family:monospace;}
+.highlight .imp {font-weight: bold; color: red;}
+.highlight li, .highlight .li1 {font-weight: normal; vertical-align:top;}
+.highlight .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
+.highlight .li2 {font-weight: bold; vertical-align:top;}
+.highlight .kw1 {color: #b1b100;}
+.highlight .kw2 {color: #000000; font-weight: bold;}
+.highlight .kw3 {color: #990000;}
+.highlight .kw4 {color: #009900; font-weight: bold;}
+.highlight .co1 {color: #666666; font-style: italic;}
+.highlight .co2 {color: #666666; font-style: italic;}
+.highlight .co3 {color: #0000cc; font-style: italic;}
+.highlight .co4 {color: #009933; font-style: italic;}
+.highlight .coMULTI {color: #666666; font-style: italic;}
+.highlight .es0 {color: #000099; font-weight: bold;}
+.highlight .es1 {color: #000099; font-weight: bold;}
+.highlight .es2 {color: #660099; font-weight: bold;}
+.highlight .es3 {color: #660099; font-weight: bold;}
+.highlight .es4 {color: #006699; font-weight: bold;}
+.highlight .es5 {color: #006699; font-weight: bold; font-style: italic;}
+.highlight .es6 {color: #009933; font-weight: bold;}
+.highlight .es_h {color: #000099; font-weight: bold;}
+.highlight .br0 {color: #009900;}
+.highlight .sy0 {color: #339933;}
+.highlight .sy1 {color: #000000; font-weight: bold;}
+.highlight .st0 {color: #0000ff;}
+.highlight .st_h {color: #0000ff;}
+.highlight .nu0 {color: #cc66cc;}
+.highlight .nu8 {color: #208080;}
+.highlight .nu12 {color: #208080;}
+.highlight .nu19 {color:#800080;}
+.highlight .me1 {color: #004000;}
+.highlight .me2 {color: #004000;}
+.highlight .re0 {color: #000088;}
+.highlight .ln-xtra, .highlight li.ln-xtra, .highlight div.ln-xtra {background-color: #ffc;}
+.highlight span.xtra { display:block; }
