@@ -58,7 +58,7 @@ class WP_Hatena_Notation_Renderer extends HatenaSyntax_Renderer {
 	protected function renderHttpLink(Array $data) {
 		$ret = parent::renderHttpLink($data);
 		if ($this->config['link_target_blank']) {
-			return strtr($ret, array('">', '" target="_blank">'));
+			return strtr($ret, array('">' => '" target="_blank">'));
 		}
 		return $ret;
 	}
