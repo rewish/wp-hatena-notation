@@ -39,8 +39,7 @@ class WP_Hatena_Notation_Renderer extends HatenaSyntax_Renderer {
 		$this->root = $rootnode;
 		$this->headerCount = 0;
 
-		$ret = $this->renderNode($rootnode);
-		$ret = '<div class="' . $this->config['sectionclass'] . '">' . PHP_EOL . $ret . PHP_EOL . '</div>' . PHP_EOL;
+		$ret = str_replace('%content%', $this->renderNode($rootnode), $this->config['textbody_html']);
 
 		if ($this->fncount > 0) {
 			$ret .= PHP_EOL . str_replace('%content%', $this->footnote, $this->config['footnote_html']);
