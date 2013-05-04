@@ -76,7 +76,7 @@ class WP_Hatena_Notation_Migration {
 			$context->enabled($post->ID, 0);
 		}
 
-		$context->option('Config.per_post_default', true);
+		$context->option('Config.per_post', true);
 	}
 
 	/**
