@@ -41,5 +41,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
+= 2.0.1 =
+* 「リンクを別ウィンドウで開く」オプションの不具合を修正
+* http記法のタイトル取得に失敗するとFatal errorが出る不具合を修正
+* 「本文部分のHTML」オプションが機能しない不具合を修正
+
 = 2.0 =
 * WP Hatena Notation 2.0 Released!
