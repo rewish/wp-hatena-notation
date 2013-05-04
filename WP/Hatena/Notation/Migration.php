@@ -41,7 +41,7 @@ class WP_Hatena_Notation_Migration {
 		$context->option('Renderer.title_expires', $options['title_term']);
 		$context->option('Renderer.superpre_method', 'html');
 		$context->option('Renderer.superpre_html', $options['spremarkup']);
-		$context->option('Renderer.linebreak_method', $options['wp_paragraph'] ? 'wordpress' : 'plugin');
+		$context->option('Renderer.linebreak_method', $options['wp_paragraph'] ? 'wordpress' : 'wpautop');
 		$context->option('Renderer.footnote_html', sprintf('<div class="%s">%s%s%s</div>', $options['footnoteclass'], PHP_EOL, '%content%', PHP_EOL));
 
 		if ($options['wrap_section']) {
