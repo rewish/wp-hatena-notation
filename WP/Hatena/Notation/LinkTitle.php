@@ -82,7 +82,7 @@ class WP_Hatena_Notation_LinkTitle {
 	public function fetch($url) {
 		$response = wp_remote_get($url);
 
-		if (empty($response['body'])) {
+		if (is_wp_error($response) || empty($response['body'])) {
 			return $url;
 		}
 
