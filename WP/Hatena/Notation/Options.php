@@ -43,7 +43,7 @@ class WP_Hatena_Notation_Options extends WP_Hatena_Notation_Domain {
 
 		$this->options['Renderer'] += array(
 			'headerlevel' => 3,
-			'linebreak_method' => 'wordpress',
+			'linebreak_method' => 'wpautop',
 			'link_target_blank' => true,
 			'title_expires' => 90,
 			'textbody_html' => "<div class=\"section\">\n%content%\n</div>",

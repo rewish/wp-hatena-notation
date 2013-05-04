@@ -46,9 +46,9 @@
 					<th>改行の扱い</th>
 					<td>
 						<select name="<?php echo $this->fieldName('Renderer.linebreak_method'); ?>">
+							<option value="wpautop"<?php if ($options->Renderer->linebreak_method === 'wpautop'): ?> selected="selected"<?php endif; ?>>wpautop関数を適用（推奨）</option>
 							<option value="wordpress"<?php if ($options->Renderer->linebreak_method === 'wordpress'): ?> selected="selected"<?php endif; ?>>何もしない（WordPressの改行ルールに従う）</option>
-							<option value="wpautop"<?php if ($options->Renderer->linebreak_method === 'wpautop'): ?> selected="selected"<?php endif; ?>>wpautop関数を適用</option>
-							<option value="plugin"<?php if ($options->Renderer->linebreak_method === 'plugin'): ?> selected="selected"<?php endif; ?>>改行を全てpとして扱う</option>
+							<option value="plugin"<?php if ($options->Renderer->linebreak_method === 'plugin'): ?> selected="selected"<?php endif; ?>>改行を全てpとして扱う（廃止予定）</option>
 						</select>
 						<p class="description"><code>&lt;p&gt;</code>や<code>&lt;br&gt;</code>を挿入する方法を指定します。</p>
 					</td>
