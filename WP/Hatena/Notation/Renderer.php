@@ -16,6 +16,7 @@ class WP_Hatena_Notation_Renderer extends HatenaSyntax_Renderer {
 	 */
 	public function __construct(Array $config = array()) {
 		parent::__construct($config + array(
+			'htmlescape'         => false,
 			'keywordlinkhandler' => array($this, 'onKeywordLink'),
 			'superprehandler'    => array($this, 'onSuperPre'),
 			'linktitlehandler'   => array($this, 'onLinkTitle')
