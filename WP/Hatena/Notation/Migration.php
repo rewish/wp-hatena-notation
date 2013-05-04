@@ -66,10 +66,10 @@ class WP_Hatena_Notation_Migration {
 			return;
 		}
 
-		$filter = create_function('$where', 'return "$where AND post_date <= ' . $date . '";');
+		$filter = create_function('$where', 'return "$where AND post_date <= \'' . $date . '\'";');
 
 		add_filter('posts_where', $filter);
-		$posts = get_posts();
+		$posts = get_posts(array('suppress_filters' => false));
 		remove_filter('posts_where', $filter);
 
 		foreach ($posts as $post) {
