@@ -22,6 +22,22 @@ class WP_Hatena_Notation_LinkTitle {
 	protected $titles;
 
 	/**
+	 * Expired
+	 *
+	 * @param stdClass $row
+	 * @param int $expiryDays
+	 * @return bool
+	 * @TODO Kirei Kirei
+	 */
+	public static function isExpired($row, $expiryDays) {
+		if ($expiryDays <= 0 || !$row || empty($row->modified_at)) {
+			return true;
+		}
+
+		return time() < strtotime("+{$expiryDays} day", strtotime($row->modified_at));
+	}
+
+	/**
 	 * Get instance
 	 *
 	 * @staticvar WP_Hatena_Notation_LinkTitle $instance
@@ -45,10 +61,10 @@ class WP_Hatena_Notation_LinkTitle {
 	 * Get title
 	 *
 	 * @param string $url
-	 * @param int $expires
+	 * @param int $expiryDays
 	 * @return string
 	 */
-	public function get($url, $expires = 90) {
+	public function get($url, $expiryDays = 90) {
 		$key = sha1($url);
 
 		if (!empty($this->titles[$key])) {
@@ -56,9 +72,8 @@ class WP_Hatena_Notation_LinkTitle {
 		}
 
 		$row = $this->find($url);
-		$modified = strtotime("+{$expires} day", strtotime($row->modified_at));
 
-		if ($row && !empty($expires) && $modified > time()) {
+		if (!self::isExpired($row, $expiryDays)) {
 			return $row->title;
 		}
 
