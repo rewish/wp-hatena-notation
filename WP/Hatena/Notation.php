@@ -30,6 +30,12 @@ class WP_Hatena_Notation {
 	protected $Renderer;
 
 	/**
+	 * Enable wpautop filter
+	 * @var bool
+	 */
+	protected $wpautop = false;
+
+	/**
 	 * Constructor
 	 *
 	 * @param string $domain
@@ -48,6 +54,12 @@ class WP_Hatena_Notation {
 	protected function registerHooks() {
 		add_action('admin_init', array($this, 'onAdminInit'));
 		add_action('the_post', array($this, 'onThePost'));
+		add_filter('the_content', array($this, 'onTheContent'));
+
+		// Remove wpautop
+		if ($this->option('Renderer.linebreak_method') !== 'wordpress') {
+			$this->wpautop = remove_filter('the_content', 'wpautop');
+		}
 	}
 
 	/**
@@ -68,30 +80,26 @@ class WP_Hatena_Notation {
 	 * Render
 	 *
 	 * @param string $content
-	 * @param mixed $post Optional, Post ID or Post object
 	 * @return string
 	 */
-	public function render($content, $post = null) {
-		if ($post) {
-			$post = get_post($post);
-			if (!$this->Config->isEnabled($post->ID)) {
-				return $content;
-			}
-		}
+	public function render($content) {
 		return $this->Renderer->render(HatenaSyntax::parse($content));
 	}
 
 	/**
 	 * Enabled post?
 	 *
-	 * @param $post_id
+	 * @param WP_Post $post
 	 * @return bool
 	 */
-	public function enabled($post_id, $enabled = 1) {
+	public function enabled($post, $enabled = 1) {
+		$post = get_post($post);
+
 		if (count(func_get_args()) === 2) {
-			return $this->Config->saveEnabled($post_id, $enabled);
+			return $this->Config->saveEnabled($post->ID, $enabled);
 		}
-		return $this->Config->isEnabled($post_id);
+
+		return $this->Config->isEnabled($post->ID);
 	}
 
 	/**
@@ -120,7 +128,26 @@ class WP_Hatena_Notation {
 	 */
 	public function onThePost($post) {
 		global $page, $pages;
-		$content = preg_replace('/<!--more(.*?)?-->/', '====', $pages[$page - 1]);
-		$pages[$page - 1] = $this->render($content, $post);
+
+		if ($this->enabled($post)) {
+			$content = preg_replace('/<!--more(.*?)?-->/', '====', $pages[$page - 1]);
+			$pages[$page - 1] = $this->render($content);
+		}
+	}
+
+	/**
+	 * Hook on the_content
+	 *
+	 * @param string $content
+	 * @return string
+	 */
+	public function onTheContent($content) {
+		$post = get_post();
+
+		if (!$this->wpautop || $this->enabled($post)) {
+			return $content;
+		}
+
+		return wpautop($content);
 	}
 }
