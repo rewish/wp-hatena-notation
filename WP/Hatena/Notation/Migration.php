@@ -1,5 +1,17 @@
 <?php
+require_once dirname(__FILE__) . '/Migration/Interface.php';
+
 class WP_Hatena_Notation_Migration {
+	/**
+	 * Migration version number
+	 */
+	const VERSION = '2.0.0';
+
+	/**
+	 * Migration version name
+	 */
+	const VERSION_NAME = 'hatena-notation-migrations';
+
 	/**
 	 * Legacy option name
 	 * @constant string
@@ -18,83 +30,38 @@ class WP_Hatena_Notation_Migration {
 	 * @param WP_Hatena_Notation $context
 	 */
 	public static function migrate(WP_Hatena_Notation $context) {
-		self::legacyOptions($context);
-		self::linkTitle();
-	}
+		$version = get_option(self::VERSION_NAME, '1.4');
+		$versions = self::getVersions();
+		$migrated = false;
 
-	/**
-	 * Legacy options
-	 *
-	 * @param WP_Hatena_Notation $context
-	 */
-	public static function legacyOptions(WP_Hatena_Notation $context) {
-		$options = get_option(self::LEGACY_OPTION_NAME);
-
-		if (!$options) {
-			return;
+		foreach ($versions as $info) {
+			if ($version <= $info['version']) {
+				require_once $info['path'];
+				call_user_func(array($info['class'], 'migrate'), $context);
+				$migrated = true;
+			}
 		}
 
-		delete_option(self::LEGACY_OPTION_NAME);
-
-		$context->option('Renderer.headerlevel', $options['headerlevel']);
-		$context->option('Renderer.link_target_blank', $options['target_blank']);
-		$context->option('Renderer.title_expires', $options['title_term']);
-		$context->option('Renderer.superpre_method', 'html');
-		$context->option('Renderer.superpre_html', $options['spremarkup']);
-		$context->option('Renderer.linebreak_method', $options['wp_paragraph'] ? 'wordpress' : 'wpautop');
-		$context->option('Renderer.footnote_html', sprintf('<div class="%s">%s%s%s</div>', $options['footnoteclass'], PHP_EOL, '%content%', PHP_EOL));
-
-		if ($options['wrap_section']) {
-			$context->option('Renderer.textbody_html', sprintf('<div class="%s">%s%s%s</div>', $options['sectionclass'], PHP_EOL, '%content%', PHP_EOL));
-		} else {
-			$context->option('Renderer.textbody_html', '%content%');
+		if ($migrated) {
+			update_option(self::VERSION_NAME, self::VERSION);
 		}
-
-		self::legacyEnabler($context, $options['after_enable_date']);
 	}
 
-	/**
-	 * Legacy enabler
-	 *
-	 * after_enable_date in legacy option
-	 *
-	 * @param WP_Hatena_Notation $context
-	 * @param string $date
-	 */
-	public static function legacyEnabler(WP_Hatena_Notation $context, $date) {
-		if (!$date) {
-			return;
+	public static function getVersions() {
+		$files = glob(dirname(__FILE__) . '/Migration/*.php');
+		$versions = array();
+
+		foreach ($files as $file) {
+			$version = basename($file, '.php');
+			if ($version !== 'Interface') {
+				$versions[] = array(
+					'version' => str_replace('_', '.', $version),
+					'path'    => $file,
+					'class'   => __CLASS__ . '_' . $version
+				);
+			}
 		}
 
-		$filter = create_function('$where', 'return "$where AND post_date <= \'' . $date . '\'";');
-
-		add_filter('posts_where', $filter);
-		$posts = get_posts(array('suppress_filters' => false));
-		remove_filter('posts_where', $filter);
-
-		foreach ($posts as $post) {
-			$context->enabled($post->ID, 0);
-		}
-
-		$context->option('Config.per_post', true);
-	}
-
-	/**
-	 * Migrate LinkTitle
-	 *
-	 * @global wpdb $wpdb
-	 */
-	public static function linkTitle() {
-		self::legacyLinkTitle();
-		WP_Hatena_Notation_LinkTitle::getInstance()->create();
-	}
-
-	/**
-	 * Legacy LinkTitle
-	 */
-	public static function legacyLinkTitle() {
-		global $wpdb;
-		$tableName = $wpdb->prefix . self::LEGACY_LINK_TITLE_TABLE_NAME;
-		$wpdb->query("DROP TABLE IF EXISTS `$tableName`;");
+		return $versions;
 	}
 }
