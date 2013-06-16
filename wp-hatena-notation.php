@@ -2,8 +2,8 @@
 /*
 Plugin Name: WP Hatena Notation
 Plugin URI: https://github.com/rewish/wp-hatena-notation
-Description: あなたのWordPressに「はてな記法」を導入します。
-Version: 2.0.3
+Description: WordPressに「はてな記法」を導入します。
+Version: 2.0.4
 Author: rewish
 Author URI: https://github.com/rewish
 */

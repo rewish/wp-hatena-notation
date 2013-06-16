@@ -41,6 +41,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
+= 2.0.4 =
+* 互換性維持のため`wphn_render()`を追加
+
 = 2.0.3 =
 * 改行の扱いで「何もしない」以外を選んだ場合`wpautop`フィルタを無効化
 * 無効日指定の引き継ぎが、全ての投稿を対象してしまう不具合を修正
