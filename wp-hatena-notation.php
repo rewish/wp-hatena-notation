@@ -16,3 +16,9 @@ require_once WP_HATENA_NOTATION_DIR . '/WP/Hatena/Notation.php';
 
 // Global instance
 $wp_hatena_notation = new WP_Hatena_Notation('wp-hatena-notation');
+
+// Function to maintain compatibility with 1.x
+function wphn_render($content) {
+	global $wp_hatena_notation;
+	return $wp_hatena_notation->render($content);
+}
