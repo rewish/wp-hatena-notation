@@ -61,7 +61,11 @@ class WP_Hatena_Notation {
 	 * Register hooks
 	 */
 	protected function registerHooks() {
-		add_action('admin_init', array($this, 'onAdminInit'));
+		if (is_admin()) {
+			add_action('admin_init', array($this, 'onAdminInit'));
+			add_action('save_post', array($this, 'onSavePost'));
+		}
+
 		add_action('the_post', array($this, 'onThePost'));
 		add_filter('the_content', array($this, 'onTheContent'));
 
@@ -92,6 +96,7 @@ class WP_Hatena_Notation {
 	 * @return string
 	 */
 	public function render($content) {
+		$content = preg_replace('/<!--more(.*?)?-->/', '====', $content);
 		return $this->Renderer->render(HatenaSyntax::parse($content));
 	}
 
@@ -103,10 +108,6 @@ class WP_Hatena_Notation {
 	 * @return string
 	 */
 	public function cachedContent($post, $content) {
-		if (!$this->Options->get('Renderer.cache')) {
-			return $this->render($content);
-		}
-
 		$cachedContent = $this->Cache->get($post, 'content');
 
 		if (!$cachedContent) {
@@ -145,10 +146,31 @@ class WP_Hatena_Notation {
 	}
 
 	/**
+	 * Is enabled cache?
+	 *
+	 * @return bool
+	 */
+	public function isEnabledCache() {
+		return !!$this->Options->get('Renderer.cache');
+	}
+
+	/**
 	 * Hook on admin_init
 	 */
 	public function onAdminInit() {
 		WP_Hatena_Notation_Migration::migrate($this);
+	}
+
+	/**
+	 * Hook on save_post
+	 *
+	 * @param integer $postID
+	 */
+	public function onSavePost($postID) {
+		if ($this->enabled($postID) && $this->isEnabledCache()) {
+			$post = get_post($postID);
+			$this->Cache->set($post, 'content', $this->render($post->post_content));
+		}
 	}
 
 	/**
@@ -165,8 +187,11 @@ class WP_Hatena_Notation {
 			return;
 		}
 
-		$content = preg_replace('/<!--more(.*?)?-->/', '====', $pages[$page - 1]);
-		$pages[$page - 1] = $this->cachedContent($post, $content);
+		if ($this->isEnabledCache()) {
+			$pages[$page - 1] = $this->cachedContent($post, $pages[$page - 1]);
+		} else {
+			$pages[$page - 1] = $this->render($pages[$page - 1]);
+		}
 	}
 
 	/**
