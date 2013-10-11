@@ -47,23 +47,23 @@ class WP_Hatena_Notation_PostSetting extends WP_Hatena_Notation_Domain {
 	 * Render meta box
 	 */
 	public function renderMetaBox() {
-		global $post_id;
-		$enabled = $this->isEnabled($post_id);
+		$enabled = $this->isEnabled();
 		require_once WP_HATENA_NOTATION_VIEW_DIR . DIRECTORY_SEPARATOR . 'meta_box.php';
 	}
 
 	/**
 	 * Is enabled
 	 *
-	 * @param int $post_id
+	 * @param WP_Post $post
 	 * @return bool
 	 */
-	public function isEnabled($post_id) {
+	public function isEnabled($post = null) {
 		if (!$this->options['per_post']) {
 			return true;
 		}
 
-		$enabled = get_post_meta($post_id, $this->metaKey('enabled'), true);
+		$post = get_post($post);
+		$enabled = get_post_meta($post->ID, $this->metaKey('enabled'), true);
 
 		if (!is_bool($enabled) && empty($enabled)) {
 			$enabled = $this->options['per_post_default'];
