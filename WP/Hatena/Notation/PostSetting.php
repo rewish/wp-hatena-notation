@@ -1,8 +1,8 @@
 <?php
 /**
- * Class WP_Hatena_Notation_Config
+ * Class WP_Hatena_Notation_PostSetting
  */
-class WP_Hatena_Notation_Config extends WP_Hatena_Notation_Domain {
+class WP_Hatena_Notation_PostSetting extends WP_Hatena_Notation_Domain {
 	/**
 	 * Meta box title
 	 * @constant string
@@ -10,19 +10,20 @@ class WP_Hatena_Notation_Config extends WP_Hatena_Notation_Domain {
 	const META_BOX_TITLE = 'はてな記法';
 
 	/**
-	 * Config data
+	 * Option data of PostSetting
 	 * @var array
 	 */
-	protected $config;
+	protected $options;
 
 	/**
 	 * Constructor
 	 *
-	 * @param array $config
+	 * @param string $name
+	 * @param array $options
 	 */
-	public function __construct($name, Array $config) {
+	public function __construct($name, Array $options) {
 		parent::__construct($name);
-		$this->config = $config;
+		$this->options = $options;
 		$this->registerHooks();
 	}
 
@@ -30,7 +31,7 @@ class WP_Hatena_Notation_Config extends WP_Hatena_Notation_Domain {
 	 * Register hooks
 	 */
 	public function registerHooks() {
-		if ($this->config['per_post']) {
+		if ($this->options['per_post']) {
 			add_action('add_meta_boxes', array($this, 'addMetaBox'));
 			add_action('save_post', array($this, 'onSavePost'));
 		}
@@ -65,6 +66,7 @@ class WP_Hatena_Notation_Config extends WP_Hatena_Notation_Domain {
 	/**
 	 * Get meta name
 	 *
+	 * @param string $name
 	 * @return string
 	 */
 	public function metaName($name) {
@@ -78,14 +80,16 @@ class WP_Hatena_Notation_Config extends WP_Hatena_Notation_Domain {
 	 * @return bool
 	 */
 	public function isEnabled($post_id) {
-		if (!$this->config['per_post']) {
+		if (!$this->options['per_post']) {
 			return true;
 		}
 
 		$enabled = get_post_meta($post_id, $this->metaName('enabled'), true);
+
 		if ($enabled === false) {
-			$enabled = $this->config['per_post_default'];
+			$enabled = $this->options['per_post_default'];
 		}
+
 		return !!$enabled;
 	}
 

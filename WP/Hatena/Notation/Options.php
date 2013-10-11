@@ -38,7 +38,7 @@ class WP_Hatena_Notation_Options extends WP_Hatena_Notation_Domain {
 	public function setUp() {
 		$this->options = get_option($this->name, array()) + array(
 			'Renderer' => array(),
-			'Config' => array()
+			'PostSetting' => array()
 		);
 
 		$this->options['Renderer'] += array(
@@ -52,7 +52,7 @@ class WP_Hatena_Notation_Options extends WP_Hatena_Notation_Domain {
 			'superpre_method' => 'geshi'
 		);
 
-		$this->options['Config'] += array(
+		$this->options['PostSetting'] += array(
 			'per_user' => false,
 			'per_user_default' => true,
 			'per_post' => false,
@@ -134,7 +134,7 @@ class WP_Hatena_Notation_Options extends WP_Hatena_Notation_Domain {
 
 		$options = (object)$this->get();
 		$options->Renderer = (object)$options->Renderer;
-		$options->Config = (object)$options->Config;
+		$options->PostSetting = (object)$options->PostSetting;
 
 		$highlightCSS = $wp_hatena_notation->fileURL('css/highlight.css');
 		$pageJS = $wp_hatena_notation->fileURL('js/options_page.js');

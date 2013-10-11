@@ -5,7 +5,7 @@ class WP_Hatena_Notation_Migration {
 	/**
 	 * Migration version number
 	 */
-	const VERSION = '2.0.0';
+	const VERSION = '2.1.0';
 
 	/**
 	 * Migration version name

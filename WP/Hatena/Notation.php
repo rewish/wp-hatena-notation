@@ -5,7 +5,7 @@
 require_once dirname(__FILE__) . '/Notation/Exception.php';
 require_once dirname(__FILE__) . '/Notation/Domain.php';
 require_once dirname(__FILE__) . '/Notation/Options.php';
-require_once dirname(__FILE__) . '/Notation/Config.php';
+require_once dirname(__FILE__) . '/Notation/PostSetting.php';
 require_once dirname(__FILE__) . '/Notation/Renderer.php';
 require_once dirname(__FILE__) . '/Notation/Cache.php';
 require_once dirname(__FILE__) . '/Notation/LinkTitle.php';
@@ -19,10 +19,10 @@ class WP_Hatena_Notation {
 	protected $Options;
 
 	/**
-	 * Config instance
-	 * @var WP_Hatena_Notation_Config
+	 * PostSetting instance
+	 * @var WP_Hatena_Notation_PostSetting
 	 */
-	protected $Config;
+	protected $PostSetting;
 
 	/**
 	 * Renderer instance
@@ -49,7 +49,7 @@ class WP_Hatena_Notation {
 	 */
 	public function __construct($domain) {
 		$this->Options = new WP_Hatena_Notation_Options($domain);
-		$this->Config = new WP_Hatena_Notation_Config($domain, $this->option('Config'));
+		$this->PostSetting = new WP_Hatena_Notation_PostSetting($domain, $this->option('PostSetting'));
 		$this->Renderer = new WP_Hatena_Notation_Renderer($this->option('Renderer'));
 		$this->Cache = new WP_Hatena_Notation_Cache($domain);
 
@@ -122,10 +122,10 @@ class WP_Hatena_Notation {
 		$post = get_post($post);
 
 		if (count(func_get_args()) === 2) {
-			return $this->Config->saveEnabled($post->ID, $enabled);
+			return $this->PostSetting->saveEnabled($post->ID, $enabled);
 		}
 
-		return $this->Config->isEnabled($post->ID);
+		return $this->PostSetting->isEnabled($post->ID);
 	}
 
 	/**
