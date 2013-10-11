@@ -103,6 +103,10 @@ class WP_Hatena_Notation {
 	 * @return string
 	 */
 	public function cachedContent($post, $content) {
+		if (!$this->Options->get('Renderer.cache')) {
+			return $this->render($content);
+		}
+
 		$cachedContent = $this->Cache->get($post, 'content');
 
 		if (!$cachedContent) {

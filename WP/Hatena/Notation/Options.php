@@ -39,6 +39,7 @@ class WP_Hatena_Notation_Options extends WP_Hatena_Notation_Domain {
 		);
 
 		$this->options['Renderer'] += array(
+			'cache' => false,
 			'headerlevel' => 3,
 			'linebreak_method' => 'wpautop',
 			'link_target_blank' => true,
@@ -132,8 +133,10 @@ class WP_Hatena_Notation_Options extends WP_Hatena_Notation_Domain {
 		global $wp_hatena_notation;
 
 		$options = (object)$this->get();
-		$options->Renderer = (object)$options->Renderer;
-		$options->PostSetting = (object)$options->PostSetting;
+
+		foreach ($options as &$option) {
+			$option = (object)$option;
+		}
 
 		$highlightCSS = $wp_hatena_notation->fileURL('css/highlight.css');
 		$pageJS = $wp_hatena_notation->fileURL('js/options_page.js');

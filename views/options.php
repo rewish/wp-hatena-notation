@@ -13,6 +13,17 @@
 		<table class="form-table">
 			<tbody>
 				<tr>
+					<th>パフォーマンス</th>
+					<td>
+						<label>
+							<input type="hidden" name="<?php echo $this->fieldName('Renderer.cache'); ?>" value="0">
+							<input type="checkbox" name="<?php echo $this->fieldName('Renderer.cache'); ?>" value="1"<?php if ($options->Renderer->cache): ?> checked="checked"<?php endif; ?>>
+							記事のレンダリング結果をキャッシュ
+						</label>
+					</td>
+				</tr>
+
+				<tr>
 					<th>見出し記法基準レベル</th>
 					<td>
 						<select name="<?php echo $this->fieldName('Renderer.headerlevel'); ?>">
@@ -71,7 +82,7 @@
 				</tr>
 
 				<tr>
-					<th style="padding-bottom:2px;" rowspan="3">スーパーpre記法の色分け方法</th>
+					<th style="padding-bottom:2px;" rowspan="2">スーパーpre記法の色分け方法</th>
 					<td style="padding-bottom:2px;">
 						<select id="wp_hatena_notation_superpre_method" name="<?php echo $this->fieldName('Renderer.superpre_method'); ?>">
 							<option value="geshi"<?php if ($options->Renderer->superpre_method === 'geshi'): ?> selected="selected"<?php endif; ?>>Built-In Highlighterで色分け（GeSHi）</option>
@@ -107,7 +118,6 @@
 						<label for="wp_hatena_notation_per_post_default">初期状態で「はてな記法を使用」にチェックを入れる</label>
 					</div>
 				</td>
-				<td></td>
 			</tr>
 		</table>
 
