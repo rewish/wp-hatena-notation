@@ -7,6 +7,7 @@ require_once dirname(__FILE__) . '/Notation/Domain.php';
 require_once dirname(__FILE__) . '/Notation/Options.php';
 require_once dirname(__FILE__) . '/Notation/Config.php';
 require_once dirname(__FILE__) . '/Notation/Renderer.php';
+require_once dirname(__FILE__) . '/Notation/Cache.php';
 require_once dirname(__FILE__) . '/Notation/LinkTitle.php';
 require_once dirname(__FILE__) . '/Notation/Migration.php';
 
@@ -30,6 +31,12 @@ class WP_Hatena_Notation {
 	protected $Renderer;
 
 	/**
+	 * Cache instance
+	 * @var WP_Hatena_Notation_Cache
+	 */
+	protected $Cache;
+
+	/**
 	 * Enable wpautop filter
 	 * @var bool
 	 */
@@ -44,6 +51,7 @@ class WP_Hatena_Notation {
 		$this->Options = new WP_Hatena_Notation_Options($domain);
 		$this->Config = new WP_Hatena_Notation_Config($domain, $this->option('Config'));
 		$this->Renderer = new WP_Hatena_Notation_Renderer($this->option('Renderer'));
+		$this->Cache = new WP_Hatena_Notation_Cache($domain);
 
 		$this->registerHooks();
 	}
@@ -84,6 +92,24 @@ class WP_Hatena_Notation {
 	 */
 	public function render($content) {
 		return $this->Renderer->render(HatenaSyntax::parse($content));
+	}
+
+	/**
+	 * Cached content
+	 *
+	 * @param WP_Post $post
+	 * @param string $content
+	 * @return string
+	 */
+	public function cachedContent($post, $content) {
+		$cachedContent = $this->Cache->get($post, 'content');
+
+		if (!$cachedContent) {
+			$cachedContent = $this->render($content);
+			$this->Cache->set($post, 'content', $cachedContent);
+		}
+
+		return $cachedContent;
 	}
 
 	/**
@@ -129,10 +155,12 @@ class WP_Hatena_Notation {
 	public function onThePost($post) {
 		global $page, $pages;
 
-		if ($this->enabled($post)) {
-			$content = preg_replace('/<!--more(.*?)?-->/', '====', $pages[$page - 1]);
-			$pages[$page - 1] = $this->render($content);
+		if (!$this->enabled($post)) {
+			return;
 		}
+
+		$content = preg_replace('/<!--more(.*?)?-->/', '====', $pages[$page - 1]);
+		$pages[$page - 1] = $this->cachedContent($post, $content);
 	}
 
 	/**
