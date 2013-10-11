@@ -18,11 +18,9 @@ class WP_Hatena_Notation_PostSetting extends WP_Hatena_Notation_Domain {
 	/**
 	 * Constructor
 	 *
-	 * @param string $name
 	 * @param array $options
 	 */
-	public function __construct($name, Array $options) {
-		parent::__construct($name);
+	public function __construct(Array $options) {
 		$this->options = $options;
 		$this->registerHooks();
 	}
@@ -41,8 +39,8 @@ class WP_Hatena_Notation_PostSetting extends WP_Hatena_Notation_Domain {
 	 * Add meta box
 	 */
 	public function addMetaBox() {
-		add_meta_box($this->name, self::META_BOX_TITLE, array($this, 'renderMetaBox'), 'post', 'side', 'high');
-		add_meta_box($this->name, self::META_BOX_TITLE, array($this, 'renderMetaBox'), 'page', 'side', 'high');
+		add_meta_box($this->domain, self::META_BOX_TITLE, array($this, 'renderMetaBox'), 'post', 'side', 'high');
+		add_meta_box($this->domain, self::META_BOX_TITLE, array($this, 'renderMetaBox'), 'page', 'side', 'high');
 	}
 
 	/**
@@ -52,25 +50,6 @@ class WP_Hatena_Notation_PostSetting extends WP_Hatena_Notation_Domain {
 		global $post_id;
 		$enabled = $this->isEnabled($post_id);
 		require_once WP_HATENA_NOTATION_VIEW_DIR . DIRECTORY_SEPARATOR . 'meta_box.php';
-	}
-
-	/**
-	 * Get nonce key
-	 *
-	 * @return string
-	 */
-	public function nonceKey() {
-		return $this->name . '_nonce';
-	}
-
-	/**
-	 * Get meta name
-	 *
-	 * @param string $name
-	 * @return string
-	 */
-	public function metaName($name) {
-		return "_{$this->name}_{$name}";
 	}
 
 	/**
@@ -84,9 +63,9 @@ class WP_Hatena_Notation_PostSetting extends WP_Hatena_Notation_Domain {
 			return true;
 		}
 
-		$enabled = get_post_meta($post_id, $this->metaName('enabled'), true);
+		$enabled = get_post_meta($post_id, $this->metaKey('enabled'), true);
 
-		if ($enabled === false) {
+		if (!is_bool($enabled) && empty($enabled)) {
 			$enabled = $this->options['per_post_default'];
 		}
 
@@ -100,7 +79,7 @@ class WP_Hatena_Notation_PostSetting extends WP_Hatena_Notation_Domain {
 	 * @param int $enabled
 	 */
 	public function saveEnabled($post_id, $enabled) {
-		update_post_meta($post_id, $this->metaName('enabled'), $enabled);
+		update_post_meta($post_id, $this->metaKey('enabled'), $enabled);
 	}
 
 	/**
@@ -115,13 +94,13 @@ class WP_Hatena_Notation_PostSetting extends WP_Hatena_Notation_Domain {
 		$type = $_POST['post_type'] === 'page' ? $_POST['post_type'] : 'post';
 
 		if (empty($_POST[$key])
-			|| !wp_verify_nonce($_POST[$key], $this->name)
+			|| !wp_verify_nonce($_POST[$key], $this->domain)
 			|| (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
 			|| !current_user_can("edit_$type", $post_id)
-			|| !isset($_POST[$this->name]['Post']['enabled'])) {
+			|| !isset($_POST[$this->domain]['Post']['enabled'])) {
 			return;
 		}
 
-		$this->saveEnabled($post_id, $_POST[$this->name]['Post']['enabled']);
+		$this->saveEnabled($post_id, $_POST[$this->domain]['Post']['enabled']);
 	}
 }

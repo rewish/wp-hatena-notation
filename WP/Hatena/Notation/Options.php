@@ -23,11 +23,8 @@ class WP_Hatena_Notation_Options extends WP_Hatena_Notation_Domain {
 
 	/**
 	 * Constructor
-	 *
-	 * @param string $name Option name
 	 */
-	public function __construct($name) {
-		parent::__construct($name);
+	public function __construct() {
 		$this->setUp();
 		$this->registerHooks();
 	}
@@ -36,7 +33,7 @@ class WP_Hatena_Notation_Options extends WP_Hatena_Notation_Domain {
 	 * Setup options
 	 */
 	public function setUp() {
-		$this->options = get_option($this->name, array()) + array(
+		$this->options = get_option($this->domain, array()) + array(
 			'Renderer' => array(),
 			'PostSetting' => array()
 		);
@@ -82,13 +79,14 @@ class WP_Hatena_Notation_Options extends WP_Hatena_Notation_Domain {
 			case 2: $o[$k[0]][$k[1]] = $value; break;
 		}
 
-		update_option($this->name, $this->options);
+		update_option($this->domain, $this->options);
 	}
 
 	/**
 	 * Get option
 	 *
 	 * @param string $key
+	 * @return mixed
 	 */
 	public function get($key = null) {
 		if (empty($key)) {
@@ -114,6 +112,7 @@ class WP_Hatena_Notation_Options extends WP_Hatena_Notation_Domain {
 	 * Option to JSON
 	 *
 	 * @param string $key
+	 * @return string
 	 */
 	public function toJSON($key) {
 		return json_encode($this->get($key));
@@ -123,7 +122,7 @@ class WP_Hatena_Notation_Options extends WP_Hatena_Notation_Domain {
 	 * Add options page
 	 */
 	public function addOptionsPage() {
-		add_options_page(self::PAGE_TITLE, self::MENU_TITLE, 'manage_options', $this->name, array($this, 'renderOptionsPage'));
+		add_options_page(self::PAGE_TITLE, self::MENU_TITLE, 'manage_options', $this->domain, array($this, 'renderOptionsPage'));
 	}
 
 	/**

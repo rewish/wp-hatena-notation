@@ -16,7 +16,7 @@ class WP_Hatena_Notation_LinkTitle {
 	protected $table;
 
 	/**
-	 * Title titless
+	 * Title titles
 	 * @var array
 	 */
 	protected $titles;

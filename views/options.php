@@ -6,7 +6,7 @@
 		<div class="hiddens">
 			<?php wp_nonce_field('update-options'); ?>
 			<input type="hidden" name="action" value="update">
-			<input type="hidden" name="page_options" value="<?php echo $this->name; ?>">
+			<input type="hidden" name="page_options" value="<?php echo $this->domain; ?>">
 		</div>
 
 		<h3>レンダリング</h3>
