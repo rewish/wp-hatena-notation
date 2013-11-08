@@ -6,12 +6,23 @@
 		<div class="hiddens">
 			<?php wp_nonce_field('update-options'); ?>
 			<input type="hidden" name="action" value="update">
-			<input type="hidden" name="page_options" value="<?php echo $this->name; ?>">
+			<input type="hidden" name="page_options" value="<?php echo $this->domain; ?>">
 		</div>
 
 		<h3>レンダリング</h3>
 		<table class="form-table">
 			<tbody>
+				<tr>
+					<th>パフォーマンス</th>
+					<td>
+						<label>
+							<input type="hidden" name="<?php echo $this->fieldName('Renderer.cache'); ?>" value="0">
+							<input type="checkbox" name="<?php echo $this->fieldName('Renderer.cache'); ?>" value="1"<?php if ($options->Renderer->cache): ?> checked="checked"<?php endif; ?>>
+							記事のレンダリング結果をキャッシュ
+						</label>
+					</td>
+				</tr>
+
 				<tr>
 					<th>見出し記法基準レベル</th>
 					<td>
@@ -71,7 +82,7 @@
 				</tr>
 
 				<tr>
-					<th style="padding-bottom:2px;" rowspan="3">スーパーpre記法の色分け方法</th>
+					<th style="padding-bottom:2px;" rowspan="2">スーパーpre記法の色分け方法</th>
 					<td style="padding-bottom:2px;">
 						<select id="wp_hatena_notation_superpre_method" name="<?php echo $this->fieldName('Renderer.superpre_method'); ?>">
 							<option value="geshi"<?php if ($options->Renderer->superpre_method === 'geshi'): ?> selected="selected"<?php endif; ?>>Built-In Highlighterで色分け（GeSHi）</option>
@@ -98,16 +109,15 @@
 			<tr>
 				<th rowspan="2">記事ごとの設定</th>
 				<td>
-					<input type="hidden" name="<?php echo $this->fieldName('Config.per_post'); ?>" value="0">
-					<input id="wp_hatena_notation_per_post" type="checkbox" name="<?php echo $this->fieldName('Config.per_post'); ?>" value="1"<?php if ($options->Config->per_post): ?> checked="checked"<?php endif; ?>>
+					<input type="hidden" name="<?php echo $this->fieldName('PostSetting.per_post'); ?>" value="0">
+					<input id="wp_hatena_notation_per_post" type="checkbox" name="<?php echo $this->fieldName('PostSetting.per_post'); ?>" value="1"<?php if ($options->PostSetting->per_post): ?> checked="checked"<?php endif; ?>>
 					<label for="wp_hatena_notation_per_post">使用/不使用の切り替えを許可する</label>
 					<div id="wp_hatena_notation_per_post_default_wrap">
-						┗<input type="hidden" name="<?php echo $this->fieldName('Config.per_post_default'); ?>" value="0">
-						<input id="wp_hatena_notation_per_post_default" type="checkbox" name="<?php echo $this->fieldName('Config.per_post_default'); ?>" value="1"<?php if ($options->Config->per_post_default): ?> checked="checked"<?php endif; ?>>
+						┗<input type="hidden" name="<?php echo $this->fieldName('PostSetting.per_post_default'); ?>" value="0">
+						<input id="wp_hatena_notation_per_post_default" type="checkbox" name="<?php echo $this->fieldName('PostSetting.per_post_default'); ?>" value="1"<?php if ($options->PostSetting->per_post_default): ?> checked="checked"<?php endif; ?>>
 						<label for="wp_hatena_notation_per_post_default">初期状態で「はてな記法を使用」にチェックを入れる</label>
 					</div>
 				</td>
-				<td></td>
 			</tr>
 		</table>
 

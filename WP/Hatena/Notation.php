@@ -3,11 +3,15 @@
  * Class WP_Hatena_Notation
  */
 require_once dirname(__FILE__) . '/Notation/Exception.php';
+
 require_once dirname(__FILE__) . '/Notation/Domain.php';
 require_once dirname(__FILE__) . '/Notation/Options.php';
-require_once dirname(__FILE__) . '/Notation/Config.php';
+require_once dirname(__FILE__) . '/Notation/PostSetting.php';
+require_once dirname(__FILE__) . '/Notation/Cache.php';
+
 require_once dirname(__FILE__) . '/Notation/Renderer.php';
 require_once dirname(__FILE__) . '/Notation/LinkTitle.php';
+
 require_once dirname(__FILE__) . '/Notation/Migration.php';
 
 class WP_Hatena_Notation {
@@ -18,16 +22,22 @@ class WP_Hatena_Notation {
 	protected $Options;
 
 	/**
-	 * Config instance
-	 * @var WP_Hatena_Notation_Config
+	 * PostSetting instance
+	 * @var WP_Hatena_Notation_PostSetting
 	 */
-	protected $Config;
+	protected $PostSetting;
 
 	/**
 	 * Renderer instance
 	 * @var WP_Hatena_Notation_Renderer
 	 */
 	protected $Renderer;
+
+	/**
+	 * Cache instance
+	 * @var WP_Hatena_Notation_Cache
+	 */
+	protected $Cache;
 
 	/**
 	 * Enable wpautop filter
@@ -37,13 +47,12 @@ class WP_Hatena_Notation {
 
 	/**
 	 * Constructor
-	 *
-	 * @param string $domain
 	 */
-	public function __construct($domain) {
-		$this->Options = new WP_Hatena_Notation_Options($domain);
-		$this->Config = new WP_Hatena_Notation_Config($domain, $this->option('Config'));
+	public function __construct() {
+		$this->Options = new WP_Hatena_Notation_Options();
+		$this->PostSetting = new WP_Hatena_Notation_PostSetting($this->option('PostSetting'));
 		$this->Renderer = new WP_Hatena_Notation_Renderer($this->option('Renderer'));
+		$this->Cache = new WP_Hatena_Notation_Cache();
 
 		$this->registerHooks();
 	}
@@ -52,7 +61,11 @@ class WP_Hatena_Notation {
 	 * Register hooks
 	 */
 	protected function registerHooks() {
-		add_action('admin_init', array($this, 'onAdminInit'));
+		if (is_admin()) {
+			add_action('admin_init', array($this, 'onAdminInit'));
+			add_action('save_post', array($this, 'onSavePost'));
+		}
+
 		add_action('the_post', array($this, 'onThePost'));
 		add_filter('the_content', array($this, 'onTheContent'));
 
@@ -83,23 +96,43 @@ class WP_Hatena_Notation {
 	 * @return string
 	 */
 	public function render($content) {
+		$content = preg_replace('/<!--more(.*?)?-->/', '====', $content);
 		return $this->Renderer->render(HatenaSyntax::parse($content));
+	}
+
+	/**
+	 * Cached content
+	 *
+	 * @param WP_Post $post
+	 * @param string $content
+	 * @return string
+	 */
+	public function cachedContent($post, $content) {
+		$cachedContent = $this->Cache->get($post, 'content');
+
+		if (!$cachedContent) {
+			$cachedContent = $this->render($content);
+			$this->Cache->set($post, 'content', $cachedContent);
+		}
+
+		return $cachedContent;
 	}
 
 	/**
 	 * Enabled post?
 	 *
 	 * @param WP_Post $post
+	 * @param integer $enabled
 	 * @return bool
 	 */
 	public function enabled($post, $enabled = 1) {
 		$post = get_post($post);
 
 		if (count(func_get_args()) === 2) {
-			return $this->Config->saveEnabled($post->ID, $enabled);
+			return $this->PostSetting->saveEnabled($post->ID, $enabled);
 		}
 
-		return $this->Config->isEnabled($post->ID);
+		return $this->PostSetting->isEnabled($post->ID);
 	}
 
 	/**
@@ -113,10 +146,31 @@ class WP_Hatena_Notation {
 	}
 
 	/**
+	 * Is enabled cache?
+	 *
+	 * @return bool
+	 */
+	public function isEnabledCache() {
+		return !!$this->Options->get('Renderer.cache');
+	}
+
+	/**
 	 * Hook on admin_init
 	 */
 	public function onAdminInit() {
 		WP_Hatena_Notation_Migration::migrate($this);
+	}
+
+	/**
+	 * Hook on save_post
+	 *
+	 * @param integer $postID
+	 */
+	public function onSavePost($postID) {
+		if ($this->enabled($postID) && $this->isEnabledCache()) {
+			$post = get_post($postID);
+			$this->Cache->set($post, 'content', $this->render($post->post_content));
+		}
 	}
 
 	/**
@@ -129,9 +183,14 @@ class WP_Hatena_Notation {
 	public function onThePost($post) {
 		global $page, $pages;
 
-		if ($this->enabled($post)) {
-			$content = preg_replace('/<!--more(.*?)?-->/', '====', $pages[$page - 1]);
-			$pages[$page - 1] = $this->render($content);
+		if (!$this->enabled($post)) {
+			return;
+		}
+
+		if ($this->isEnabledCache()) {
+			$pages[$page - 1] = $this->cachedContent($post, $pages[$page - 1]);
+		} else {
+			$pages[$page - 1] = $this->render($pages[$page - 1]);
 		}
 	}
 

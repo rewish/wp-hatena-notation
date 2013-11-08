@@ -3,26 +3,9 @@ require_once dirname(__FILE__) . '/Migration/Interface.php';
 
 class WP_Hatena_Notation_Migration {
 	/**
-	 * Migration version number
-	 */
-	const VERSION = '2.0.0';
-
-	/**
 	 * Migration version name
 	 */
-	const VERSION_NAME = 'hatena-notation-migrations';
-
-	/**
-	 * Legacy option name
-	 * @constant string
-	 */
-	const LEGACY_OPTION_NAME = 'hatena_notation';
-
-	/**
-	 * Legacy link title table name
-	 * @constant string
-	 */
-	const LEGACY_LINK_TITLE_TABLE_NAME = 'hatena_notation';
+	const VERSION_NAME = 'wp-hatena-notation-migration-version';
 
 	/**
 	 * Migrate
@@ -32,18 +15,23 @@ class WP_Hatena_Notation_Migration {
 	public static function migrate(WP_Hatena_Notation $context) {
 		$version = get_option(self::VERSION_NAME, '1.4');
 		$versions = self::getVersions();
-		$migrated = false;
+		$latestVersion = 0;
 
 		foreach ($versions as $info) {
-			if ($version <= $info['version']) {
-				require_once $info['path'];
-				call_user_func(array($info['class'], 'migrate'), $context);
-				$migrated = true;
+			if ($version > $info['version']) {
+				continue;
+			}
+
+			require_once $info['path'];
+			call_user_func(array($info['class'], 'migrate'), $context);
+
+			if ($latestVersion < $info['version']) {
+				$latestVersion = $info['version'];
 			}
 		}
 
-		if ($migrated) {
-			update_option(self::VERSION_NAME, self::VERSION);
+		if ($latestVersion > $version) {
+			update_option(self::VERSION_NAME, $latestVersion);
 		}
 	}
 
