@@ -41,6 +41,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
+= 2.1.0 =
+* はてな記法解析結果のキャッシュ機能を追加
+
 = 2.0.4 =
 * 互換性維持のため`wphn_render()`を追加
 
